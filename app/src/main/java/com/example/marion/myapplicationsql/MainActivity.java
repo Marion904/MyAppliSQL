@@ -16,30 +16,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DatabaseHelper.UserDbHelper userDbHelper = new DatabaseHelper.UserDbHelper(this);
-        DatabaseHelper.OrganizationDbHelper organizationDbHelper = new DatabaseHelper.OrganizationDbHelper(this);
-        DatabaseHelper.BelongsDbHelper belongsDbHelper = new DatabaseHelper.BelongsDbHelper(this);
-        DatabaseHelper.TweetDbHelper tweetDbHelper = new DatabaseHelper.TweetDbHelper(this);
+        DatabaseHelper.TweetsDbHelper dbHelper = new DatabaseHelper.TweetsDbHelper(this);
 
         // Get the data repository in write mode
-        SQLiteDatabase dbUser = userDbHelper.getWritableDatabase();
-        SQLiteDatabase dbOrga = organizationDbHelper.getWritableDatabase();
-        SQLiteDatabase dbBelongs = belongsDbHelper.getWritableDatabase();
-        SQLiteDatabase dbTweets = tweetDbHelper.getWritableDatabase();
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         //Get the data in read mode
-        SQLiteDatabase Tweets = tweetDbHelper.getReadableDatabase();
+        SQLiteDatabase tweets = dbHelper.getReadableDatabase();
 
 
         // Insert the new row, returning the primary key value of the new row
-//        long newRowUserId = DatabaseHelper.UserDbHelper.userCreation(this, dbUser, "myName","myEmail");
-//        long newRowOrgaId = DatabaseHelper.OrganizationDbHelper.organizationCreation(this, dbOrga);
-//        long newRowBelongsId = DatabaseHelper.BelongsDbHelper.belongingCreation(this, dbBelongs, newRowUserId, newRowOrgaId);
-//        long newTweet = DatabaseHelper.TweetDbHelper.tweetCreation(this,dbTweets, newRowUserId,"bla bla bla ");
+       long newRowUserId = DatabaseHelper.TweetsDbHelper.userCreation(this, db, "myName","myEmail");
+       long newRowOrgaId = DatabaseHelper.TweetsDbHelper.organizationCreation(this, db,"myOrga","www.myOrga.com");
+       long newRowBelongsId = DatabaseHelper.TweetsDbHelper.belongingCreation(this, db, newRowUserId, newRowOrgaId);
 
-//        for(int i = 0;i<10;i++){
-//            long newTweets = DatabaseHelper.TweetDbHelper.tweetCreation(this,dbTweets, newRowUserId,"bla bla bla "+i);
-//        }
+        for(int i = 0;i<10;i++){
+            long newTweets = DatabaseHelper.TweetsDbHelper.tweetCreation(this,db, newRowUserId,"bla bla bla "+i);
+            Toast.makeText(this,newTweets+"",Toast.LENGTH_SHORT).show();
+        }
+
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -50,19 +46,19 @@ public class MainActivity extends AppCompatActivity {
         };
 
         // Filter results WHERE "title" = 'My Title'
-        String selection = DatabaseContract.TweetEntry.COLUMN_NAME_USER_ID+ " = ?";
-        String[] selectionArgs = {"30"};
+        String selection = DatabaseContract.TweetEntry.COLUMN_NAME_USER_ID+ " < ?";
+        String[] selectionArgs = {"10"};
 
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
                 DatabaseContract.TweetEntry._ID+ " DESC";
         String query = "SELECT * from "+DatabaseContract.TweetEntry.TABLE_NAME+" WHERE "+selection;
-        Cursor cursor = Tweets.rawQuery(
+        Cursor cursor = tweets.rawQuery(
                 query,   // The table to query
                 selectionArgs                            // The values for the WHERE clause
         );
-        /*
+/*
         (
                 DatabaseContract.TweetEntry.TABLE_NAME,   // The table to query
                 projection,                               // The columns to return
@@ -73,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 sortOrder                                 // The sort order
         );
 */
+
         List itemIds = new ArrayList<>();
         while(cursor.moveToNext()) {
             String itemId = cursor.getString(
@@ -84,10 +81,6 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i<itemIds.size();i++){
             Toast.makeText(this, itemIds.get(i).toString(),Toast.LENGTH_SHORT).show();
         }
-
-
-
-
 
     }
 

@@ -36,24 +36,20 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
 
-        DatabaseHelper.UserDbHelper userDbHelper = new DatabaseHelper.UserDbHelper(appContext);
-        DatabaseHelper.OrganizationDbHelper organizationDbHelper = new DatabaseHelper.OrganizationDbHelper(appContext);
-        DatabaseHelper.TweetDbHelper tweetDbHelper = new DatabaseHelper.TweetDbHelper(appContext);
+        DatabaseHelper.TweetsDbHelper dbHelper = new DatabaseHelper.TweetsDbHelper(appContext);
 
         // Gets the data repository in write mode
-        SQLiteDatabase dbUser = userDbHelper.getWritableDatabase();
-        SQLiteDatabase dbOrga = organizationDbHelper.getWritableDatabase();
-        SQLiteDatabase dbTweets = tweetDbHelper.getWritableDatabase();
-        SQLiteDatabase Tweets = tweetDbHelper.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase tweets = dbHelper.getReadableDatabase();
 
-        long newUserId = DatabaseHelper.UserDbHelper.userCreation(appContext,dbUser,"myName","MyId");
-        long newOrgaId = DatabaseHelper.OrganizationDbHelper.organizationCreation(appContext,dbOrga,"myOrga","www.myOrga.com");
+        long newUserId = DatabaseHelper.TweetsDbHelper.userCreation(appContext,db,"myName","MyId");
+        long newOrgaId = DatabaseHelper.TweetsDbHelper.organizationCreation(appContext,db,"myOrga","www.myOrga.com");
 
         assertNotEquals(-1,newUserId);
         assertNotEquals(-1,newOrgaId);
 
         for(int i = 0;i<10;i++){
-            long newTweet = DatabaseHelper.TweetDbHelper.tweetCreation(appContext,dbTweets, newUserId,"bla bla bla "+i);
+            long newTweet = DatabaseHelper.TweetsDbHelper.tweetCreation(appContext,db, newUserId,"bla bla bla "+i);
             assertNotEquals(-1,newTweet);
         }
 
@@ -64,7 +60,7 @@ public class ExampleInstrumentedTest {
 
         // How you want the results sorted in the resulting Cursor
         String query = "SELECT * from "+DatabaseContract.TweetEntry.TABLE_NAME+" WHERE "+selection;
-        Cursor cursor = Tweets.rawQuery(
+        Cursor cursor = tweets.rawQuery(
                 query,                                      // query
                 selectionArgs                            // The values for the WHERE clause
         );
